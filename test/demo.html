@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div id="app"></div>
+  <div class="test-scss"> red</div>
+  <script src="./lib/vue3.2.js"></script>
+  <!-- <script src="./lib/vue3-sfc-loader-dev.js"></script> -->
+  <!-- 兼容vue2 + vue3 -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.8.4/dist/vue3-sfc-loader.js"></script> -->
+  <script src="./../dist/vue3-sfc-loader.js"></script>
+
+  <script src="./lib/stylus-compile.js"></script>
+  <script src="./lib/sass/sass.js"></script>
+</body>
+<script>
+ var sass = new Sass();
+ 
+  /* <!-- */
+  const config = {
+    files: {
+      '/test.scss': `body{
+        .test-scss{
+          color: red
+        }
+      }`,
+      '/test.mjs': `
+        export const  a = 4
+      `,
+      '/test.png': `https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a76eb16fa094d97a5c40d402cc6dd27~tplv-k3u1fbpfcp-zoom-crop-mark:1304:1304:1304:734.awebp`,
+      '/style.css': `
+        .test { color: red }
+      `,
+      '/main.vue': `
+        <template>
+          <span class="styled">hello</span> <b>World</b> !<div class="test">123</div>
+          <ResourceTest />
+        </template>
+        <script>
+          import './style.css'
+          import {a} from './test.mjs'
+          // import '/test.scss'
+          // console.log(a, '----mjs')
+          import ResourceTest from '/testResource.vue'
+          export default {
+            components: {
+              ResourceTest
+            }
+          }
+        </script>
+        <style lang="scss">
+body{
+  b{
+  color: green
+ }
+}
+ 
+      </style>
+      `,
+      '/testResource.vue': `
+      <template>
+        <img src="./test.png"></img>
+      </template>
+      <style lang="stylus">
+img
+  width 200px
+      </style>
+      `
+    }
+  };
+//     /* <!-- */
+//       const vueContent = `
+//       <template>
+//         Hello <b>World</b> !
+//       </template>
+//       <style lang="stylus">
+//  b
+//   color red
+//       </style>
+//       <style lang="sass" >
+//             b{
+//               color: green
+//             }
+//               </style>
+//     `;
+  const options = {
+    moduleCache: {
+      vue: Vue,
+      stylus: source => {
+        console.log('stylus--moduleCache')
+        return Object.assign(stylus(source), { deps: () => [] })
+      },
+      sass: { async renderSync({data}){
+          return new Promise((reslove, reject) => {
+            sass.compile(data, function(result) {
+              options.addStyle(result.text);
+              reslove(result)
+            });
+          })
+        } }
+    },
+    addStyle(styleStr) {
+      const style = document.createElement('style');
+      style.textContent = styleStr;
+      const ref = document.head.getElementsByTagName('style')[0] || null;
+      document.head.insertBefore(style, ref);
+    },
+    handleModule: async function (type, getContentData, path, options) {  // 解析器优先使用handleModule
+      // 配置型或者插件性质的module，放置编译的plugin
+      console.log(path,type)
+      switch (type) { 
+        case '.css':
+          options.addStyle(await getContentData(false));
+          return null;
+        case '.png':
+          return options.getFile(path)
+        case '.scss': // 处理单个scss文件
+        return new Promise((reslove, reject) => {
+          sass.compile(options.getFile(path), function(result) {
+            options.addStyle(result.text);
+            reslove(result)
+          });
+        })
+      } 
+    },
+    getFile(url, options) {
+      // console.log(url)
+      // return config.files[url] || (() => { throw new Error('404 ' + url) })();
+      return config.files[url];
+
+    },
+    getResource(pathCx, options) { // 其次使用getResource ， 当handleModule返回null或者不返回时， 源码位置 tools.ts:294
+    // getResource 偏运行时，能支撑适配运行时参数
+      const { refPath, relPath } = pathCx
+      // console.log(refPath, relPath, options)
+      
+	const { pathResolve, getFile, log } = options;
+	const path = pathResolve(pathCx);
+	const pathStr = path.toString();
+	return {
+		id: pathStr,
+		path: path,
+		getContent: async () => {
+			const res = await getFile(path);
+			if ( typeof res === 'string' || res instanceof ArrayBuffer ) {
+				return {
+					type: '.' + path.split('.').pop(),
+					getContentData: async (asBinary) => {
+						if ( res instanceof ArrayBuffer !== asBinary )
+							log?.('warn', `unexpected data type. ${ asBinary ? 'binary' : 'string' } is expected for "${ path }"`);
+						return res || 'default';
+					},
+				}
+			}
+			return {
+				type: '.' + path.split('.').pop(),
+				getContentData:  () => 'undefined',
+			}
+		}
+	};
+},
+
+  }
+
+  Vue.createApp(Vue.defineAsyncComponent(() => window['vue3-sfc-loader'].loadModule('/main.vue', options))).mount(window.app);
+
+</script>
+</html>
