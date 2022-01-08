@@ -8,8 +8,7 @@
   <!-- <script src="./lib/vue3-sfc-loader-dev.js"></script> -->
   <!-- 兼容vue2 + vue3 -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.8.4/dist/vue3-sfc-loader.js"></script> -->
-  <script src="./../dist/vue3-sfc-loader.js"></script>
-
+  <script src="./lib/vue3-sfc-loader.js"></script>
   <script src="./lib/stylus-compile.js"></script>
   <script src="./lib/sass/sass.js"></script>
 </body>
@@ -48,20 +47,19 @@
             }
           }
         </script>
-        <style lang="scss">
+        <style lang="scss" scoped>
 body{
   b{
   color: green
  }
 }
- 
       </style>
       `,
       '/testResource.vue': `
       <template>
         <img src="./test.png"></img>
       </template>
-      <style lang="stylus">
+      <style lang="stylus" scoped>
 img
   width 200px
       </style>
@@ -87,19 +85,27 @@ img
     moduleCache: {
       vue: Vue,
       stylus: source => {
-        console.log('stylus--moduleCache')
         return Object.assign(stylus(source), { deps: () => [] })
       },
-      sass: { async renderSync({data}){
+      sass: { async  renderSync(args){
+        const { data, file, filename, outFile, sourceMap } = args
+        // return {
+        //   css: data,
+        //   stats: {}
+        // }
           return new Promise((reslove, reject) => {
             sass.compile(data, function(result) {
-              options.addStyle(result.text);
-              reslove(result)
+              // options.addStyle(result.text);
+              reslove({
+                css: result.text,
+                stats: {}
+              })
             });
           })
         } }
     },
-    addStyle(styleStr) {
+    addStyle(styleStr, scopedid, ...args) {
+      console.log(styleStr, scopedid, '---id')
       const style = document.createElement('style');
       style.textContent = styleStr;
       const ref = document.head.getElementsByTagName('style')[0] || null;

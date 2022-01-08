@@ -200,7 +200,6 @@ export async function createSFCModule(source : string, filename : AbstractPath, 
 		const src = descStyle.src ? (await (await getResource({ refPath: filename, relPath: descStyle.src }, options).getContent()).getContentData(false)) as string : descStyle.content;
 
 		const style = await withCache(compiledCache, [ componentHash, src ], async ({ preventCache }) => {
-
 			// src: https://github.com/vuejs/vue-next/blob/15baaf14f025f6b1d46174c9713a2ec517741d0d/packages/compiler-sfc/src/compileStyle.ts#L70
 			const compiledStyle = await sfc_compileStyleAsync({
 				filename: descriptor.filename,
