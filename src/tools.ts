@@ -371,7 +371,7 @@ export async function loadDeps(refPath : AbstractPath, deps : AbstractPath[], op
 
 	switch (type) {
 		case '.vue': return createSFCModule((await getContentData(false)) as string, path, options);
-		case '.js': return createJSModule((await getContentData(false)) as string, false, path, options);
+		case '.js': return createJSModule((await getContentData(false)) as string, true, path, options);
 		case '.mjs': return createJSModule((await getContentData(false)) as string, true, path, options);
 	}
 

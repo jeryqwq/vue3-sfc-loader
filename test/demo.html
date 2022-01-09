@@ -23,7 +23,7 @@
           color: red
         }
       }`,
-      '/test.mjs': `
+      '/test.js': `
         export const  a = 4
       `,
       '/test.png': `https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a76eb16fa094d97a5c40d402cc6dd27~tplv-k3u1fbpfcp-zoom-crop-mark:1304:1304:1304:734.awebp`,
@@ -33,11 +33,12 @@
       '/main.vue': `
         <template>
           <span class="styled">hello</span> <b>World</b> !<div class="test">123</div>
+          <div class="test-scss">test scss</div>
           <ResourceTest />
         </template>
         <script>
           import './style.css'
-          import {a} from './test.mjs'
+          import {a} from './test.js'
           // import '/test.scss'
           // console.log(a, '----mjs')
           import ResourceTest from '/testResource.vue'
@@ -51,6 +52,13 @@
 body{
   b{
   color: green
+ }
+ .test-scss{
+   font-size: 20px;
+   &:after{
+     content: '++scss';
+     color: red
+   }
  }
 }
       </style>
