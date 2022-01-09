@@ -23,6 +23,18 @@
           color: red
         }
       }`,
+      '/jsx.vue': `
+      <script>
+        export default {
+            render (){
+              return <div>
+                  <h1>JSX render</h1>
+                </div>
+            }
+          }  
+      </script>
+
+      `,
       '/test.js': `
         export const  a = 4
       `,
@@ -35,16 +47,19 @@
           <span class="styled">hello</span> <b>World</b> !<div class="test">123</div>
           <div class="test-scss">test scss</div>
           <ResourceTest />
+          <Jsx />
         </template>
         <script>
           import './style.css'
           import {a} from './test.js'
+          import Jsx from '/jsx.vue'
           // import '/test.scss'
           // console.log(a, '----mjs')
           import ResourceTest from '/testResource.vue'
           export default {
             components: {
-              ResourceTest
+              ResourceTest,
+              Jsx
             }
           }
         </script>
