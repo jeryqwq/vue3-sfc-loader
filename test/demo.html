@@ -8,7 +8,7 @@
   <!-- <script src="./lib/vue3-sfc-loader-dev.js"></script> -->
   <!-- 兼容vue2 + vue3 -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.8.4/dist/vue3-sfc-loader.js"></script> -->
-  <script src="./lib/vue3-sfc-loader.js"></script>
+  <script src="./../dist/vue3-sfc-loader.js"></script>
   <script src="./lib/stylus-compile.js"></script>
   <script src="./lib/sass/sass.js"></script>
 </body>
@@ -87,7 +87,7 @@ img
       stylus: source => {
         return Object.assign(stylus(source), { deps: () => [] })
       },
-      sass: { async  renderSync(args){
+      sass: { async  render(args){
         const { data, file, filename, outFile, sourceMap } = args
         // return {
         //   css: data,

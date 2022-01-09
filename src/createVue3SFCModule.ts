@@ -6,7 +6,7 @@ import {
 	compileTemplate as sfc_compileTemplate,
 	SFCAsyncStyleCompileOptions,
 	SFCTemplateCompileOptions,
-} from '@vue/compiler-sfc'
+} from './compiler-sfc'
 
 import {
 	babelParserDefaultPlugins as vue_babelParserDefaultPlugins
