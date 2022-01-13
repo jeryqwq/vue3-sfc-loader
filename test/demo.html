@@ -26,14 +26,20 @@
       '/jsx.vue': `
       <script>
         export default {
+            props: {
+              a: {
+                type: String,
+                default: ''
+              }
+            },
             render (){
               return <div>
                   <h1>JSX render</h1>
+                  props: {this.a}
                 </div>
             }
           }  
       </script>
-
       `,
       '/test.js': `
         export const  a = 4
@@ -47,9 +53,9 @@
           <span class="styled">hello</span> <b>World</b> !<div class="test">123</div>
           <div class="test-scss">test scss</div>
           <ResourceTest />
-          <Jsx />
+          <Jsx a="jsx props"/>
         </template>
-        <script>
+        <script >
           import './style.css'
           import {a} from './test.js'
           import Jsx from '/jsx.vue'
@@ -85,6 +91,9 @@ body{
       <style lang="stylus" scoped>
 img
   width 200px
+  after
+    content: '++stylus';
+    color: red
       </style>
       `
     }
@@ -108,8 +117,10 @@ img
     moduleCache: {
       vue: Vue,
       stylus: source => {
+        console.log(Object.assign(stylus(''), { deps: () => [] }))
         return Object.assign(stylus(source), { deps: () => [] })
       },
+      
       sass: { async  render(args){
         const { data, file, filename, outFile, sourceMap } = args
         // return {

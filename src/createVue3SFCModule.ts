@@ -211,7 +211,6 @@ export async function createSFCModule(source : string, filename : AbstractPath, 
 				preprocessLang: descStyle.lang as PreprocessLang,
 				preprocessCustomRequire: id => moduleCache[id],
 			});
-
 			if ( compiledStyle.errors.length ) {
 
 				preventCache();
